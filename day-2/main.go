@@ -20,20 +20,22 @@ type v interface {
 }
 
 type sub struct {
-	x int
-	y int
+	x   int
+	y   int
+	aim int
 }
 
 func (s *sub) forward(i int) {
 	s.x += i
+	s.y = s.y + (s.aim * i)
 }
 
 func (s *sub) up(i int) {
-	s.y -= i
+	s.aim -= i
 }
 
 func (s *sub) down(i int) {
-	s.y += i
+	s.aim += i
 }
 
 func (s *sub) calc() int {
@@ -55,7 +57,7 @@ func stepone() {
 
 	s := bufio.NewScanner(f)
 
-	mySub := sub{}
+	mySub := &sub{}
 
 	for s.Scan() {
 		l := s.Text()
