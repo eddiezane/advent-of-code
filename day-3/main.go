@@ -45,11 +45,9 @@ func stepone() {
 			}
 			sum += bit
 		}
-		pass := 0
-		if len(sub) == 2 {
-			pass = 1
-		} else if float64(sum) > (float64(len(sub)) / 2) {
-			pass = 1
+		majority := 0
+		if float64(sum) >= (float64(len(sub)) / 2) {
+			majority = 1
 		}
 		newSub := make([]string, 0)
 		for _, v := range sub {
@@ -57,7 +55,7 @@ func stepone() {
 			if err != nil {
 				log.Fatal("error parsing bit", err)
 			}
-			if bit == pass {
+			if bit == majority {
 				newSub = append(newSub, v)
 			}
 		}
@@ -65,6 +63,7 @@ func stepone() {
 	}
 	ox := sub[0]
 
+	// lazy copy paste
 	sub = input
 	for i := 0; i < bitLength; i++ {
 		if len(sub) == 1 {
@@ -80,9 +79,7 @@ func stepone() {
 			sum += bit
 		}
 		pass := 0
-		if len(sub) == 2 {
-			pass = 0
-		} else if float64(sum) < (float64(len(sub)) / 2) {
+		if float64(sum) < (float64(len(sub)) / 2) {
 			pass = 1
 		}
 		newSub := make([]string, 0)
