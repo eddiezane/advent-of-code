@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"strings"
 )
 
 func main() {
@@ -31,40 +30,85 @@ func stepone() {
 	}
 
 	bitLength := len(input[0])
-	sums := make([]int, bitLength)
 
-	for _, v := range input {
-		bits := strings.Split(v, "")
-		for ix, iv := range bits {
-			bit, err := strconv.Atoi(iv)
+	sub := input
+	for i := 0; i < bitLength; i++ {
+		if len(sub) == 1 {
+			log.Println("sub is 1. breaking", sub)
+			break
+		}
+		sum := 0
+		for _, v := range sub {
+			bit, err := strconv.Atoi(string(v[i]))
 			if err != nil {
-				log.Fatal("error parsing bit:", err)
+				log.Fatal("error parsing bit", err)
 			}
-			sums[ix] += bit
+			sum += bit
 		}
-	}
-
-	gamma := ""
-	eps := ""
-	for _, v := range sums {
-		if float64(v) > (float64(len(input)) / 2) {
-			gamma = gamma + "1"
-			eps = eps + "0"
-		} else {
-			gamma = gamma + "0"
-			eps = eps + "1"
+		pass := 0
+		if len(sub) == 2 {
+			pass = 1
+		} else if float64(sum) > (float64(len(sub)) / 2) {
+			pass = 1
 		}
+		newSub := make([]string, 0)
+		for _, v := range sub {
+			bit, err := strconv.Atoi(string(v[i]))
+			if err != nil {
+				log.Fatal("error parsing bit", err)
+			}
+			if bit == pass {
+				newSub = append(newSub, v)
+			}
+		}
+		sub = newSub
 	}
+	ox := sub[0]
 
-	gi, err := strconv.ParseUint(gamma, 2, len(sums))
+	sub = input
+	for i := 0; i < bitLength; i++ {
+		if len(sub) == 1 {
+			log.Println("sub is 1. breaking", sub)
+			break
+		}
+		sum := 0
+		for _, v := range sub {
+			bit, err := strconv.Atoi(string(v[i]))
+			if err != nil {
+				log.Fatal("error parsing bit", err)
+			}
+			sum += bit
+		}
+		pass := 0
+		if len(sub) == 2 {
+			pass = 0
+		} else if float64(sum) < (float64(len(sub)) / 2) {
+			pass = 1
+		}
+		newSub := make([]string, 0)
+		for _, v := range sub {
+			bit, err := strconv.Atoi(string(v[i]))
+			if err != nil {
+				log.Fatal("error parsing bit", err)
+			}
+			if bit == pass {
+				newSub = append(newSub, v)
+			}
+		}
+		sub = newSub
+	}
+	co2 := sub[0]
+
+	log.Println(ox, co2)
+
+	oxi, err := strconv.ParseUint(ox, 2, bitLength)
 	if err != nil {
-		log.Fatal("error parsing gamma:", err)
+		log.Fatal(err)
 	}
-
-	ei, err := strconv.ParseUint(eps, 2, len(sums))
+	co2i, err := strconv.ParseUint(co2, 2, bitLength)
 	if err != nil {
-		log.Fatal("error parsing epsilon:", err)
+		log.Fatal(err)
 	}
-
-	log.Println(gi * ei)
+	log.Println(oxi, co2i)
+	log.Println(oxi * co2i)
 }
