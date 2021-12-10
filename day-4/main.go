@@ -84,6 +84,15 @@ func (b board) score(n int) int {
 	return sum * n
 }
 
+func allBoardsWon(boards []board) bool {
+	for _, b := range boards {
+		if !b.isWinner() {
+			return false
+		}
+	}
+	return true
+}
+
 func main() {
 	log.SetFlags(log.Lshortfile)
 
@@ -139,9 +148,10 @@ func main() {
 		for _, b := range boards {
 			b.mark(n)
 			if b.isWinner() {
-				b.print()
-				log.Println(b.score(n))
-				return
+				if allBoardsWon(boards) {
+					log.Println(b.score(n))
+					return
+				}
 			}
 		}
 	}
