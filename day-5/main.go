@@ -24,25 +24,50 @@ type line struct {
 type grid [][][]*point
 
 func (g grid) addLine(l *line) {
-	mx := int(math.Abs(float64(l.start.x) - float64(l.end.x)))
-	my := int(math.Abs(float64(l.start.y) - float64(l.end.y)))
+	mx := l.start.x - l.end.x
+	my := l.start.y - l.end.y
 
-	// TODO: Pull this out
+	yMin := int(math.Min(float64(l.start.y), float64(l.end.y)))
+	yMax := int(math.Max(float64(l.start.y), float64(l.end.y)))
+
+	xMin := int(math.Min(float64(l.start.x), float64(l.end.x)))
+	xMax := int(math.Max(float64(l.start.x), float64(l.end.x)))
+
+	// TODO: Pull this out into delta func
 	if mx == 0 {
 		// vertical
-		ly := int(math.Min(float64(l.start.y), float64(l.end.y)))
-		lj := int(math.Max(float64(l.start.y), float64(l.end.y)))
-		for i := ly; i <= lj; i++ {
+		for i := yMin; i <= yMax; i++ {
 			p := &point{l.start.x, i, l.start.line}
 			g[p.y][p.x] = append(g[p.y][p.x], p)
 		}
 	} else if my == 0 {
 		// horizontal
-		lx := int(math.Min(float64(l.start.x), float64(l.end.x)))
-		ly := int(math.Max(float64(l.start.x), float64(l.end.x)))
-		for i := lx; i <= ly; i++ {
+		for i := xMin; i <= xMax; i++ {
 			p := &point{i, l.start.y, l.start.line}
 			g[p.y][p.x] = append(g[p.y][p.x], p)
+		}
+	} else {
+		// 45 diagonal
+		m := my / mx
+
+		if m < 0 {
+			// line goes /
+			for x, y := xMin, yMax; x <= xMax && y >= yMin; {
+				p := &point{x, y, l.start.line}
+				g[p.y][p.x] = append(g[p.y][p.x], p)
+
+				x++
+				y--
+			}
+		} else {
+			// line goes \
+			for x, y := xMin, yMin; x <= xMax && y <= yMax; {
+				p := &point{x, y, l.start.line}
+				g[p.y][p.x] = append(g[p.y][p.x], p)
+
+				x++
+				y++
+			}
 		}
 	}
 }
@@ -68,6 +93,8 @@ func (g grid) print() {
 }
 
 func main() {
+	log.SetFlags(log.Llongfile)
+
 	if len(os.Args) != 2 {
 		log.Fatal("usage: day-5 input.txt")
 	}
@@ -90,9 +117,6 @@ func main() {
 	lines := make([]*line, 0)
 	for _, l := range input {
 		n := newLine(l)
-		if n.isDiagonal() {
-			continue
-		}
 		lines = append(lines, n)
 		maxX = maxInt(n.start.x, n.end.x, maxX)
 		maxY = maxInt(n.start.y, n.end.y, maxY)
@@ -124,21 +148,6 @@ func newLine(s string) *line {
 
 func (l *line) isDiagonal() bool {
 	return !((l.start.x == l.end.x) || (l.start.y == l.end.y))
-}
-
-func (l *line) points() []*point {
-	ps := make([]*point, 0)
-
-	// y = mx + b
-	// b = y - mx
-	mx := l.end.x - l.start.x
-	my := l.end.y - l.start.y
-	m := float64(my) / float64(mx)
-	b := float64(l.start.y) - m*float64(l.start.x)
-
-	log.Println(l.start, l.end, mx, my, m, b)
-
-	return ps
 }
 
 func newPoint(s string, l *line) *point {
