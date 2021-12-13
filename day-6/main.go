@@ -8,48 +8,8 @@ import (
 	"strings"
 )
 
-type fish struct {
-	timer int
-}
-
-func (f *fish) tick(s *sim) {
-	f.timer--
-	if f.timer < 0 {
-		f.timer = 6
-		nf := newFish(8)
-		s.addFish(nf)
-	}
-}
-
 type sim struct {
-	today   int
-	fish    []*fish
-	newFish []*fish
-}
-
-func (s *sim) addFish(f *fish) {
-	s.newFish = append(s.newFish, f)
-}
-
-func (s *sim) run(days int) {
-	log.Printf("Initial state: %s", s)
-	for i := 0; i < days; i++ {
-		for _, f := range s.fish {
-			f.tick(s)
-		}
-		s.fish = append(s.fish, s.newFish...)
-		s.newFish = make([]*fish, 0)
-		log.Printf("After %d days: %s", i+1, s)
-	}
-}
-
-func (s *sim) String() string {
-	out := make([]string, 0)
-	for _, f := range s.fish {
-		itoa := strconv.Itoa(f.timer)
-		out = append(out, itoa)
-	}
-	return strings.Join(out, ",")
+	bucket []int
 }
 
 func main() {
@@ -87,18 +47,34 @@ func main() {
 
 	s := newSim(input)
 	s.run(daysToSim)
-	log.Printf("Total fish: %d", len(s.fish))
 }
 
 func newSim(input []int) *sim {
 	s := &sim{}
+	s.bucket = make([]int, 9)
 	for _, i := range input {
-		f := newFish(i)
-		s.fish = append(s.fish, f)
+		s.bucket[i]++
 	}
 	return s
 }
 
-func newFish(i int) *fish {
-	return &fish{i}
+func (s *sim) run(days int) {
+	log.Printf("Initial state: %v", s.bucket)
+	for i := 0; i < days; i++ {
+		newFish := s.bucket[0]
+		for j := 0; j < 8; j++ {
+			s.bucket[j] = s.bucket[j+1]
+		}
+		s.bucket[6] = s.bucket[6] + newFish
+		s.bucket[8] = newFish
+		log.Printf("Day %d: %v %d", i+1, s.bucket, s.sum())
+	}
+}
+
+func (s *sim) sum() int {
+	count := 0
+	for _, i := range s.bucket {
+		count = count + i
+	}
+	return count
 }
