@@ -18,7 +18,10 @@ func newCrab(i int) *crab {
 }
 
 func (c *crab) fuel(target int) int {
-	return int(math.Abs(float64(c.start - target)))
+	// thanks brain for remembering triangular numbers
+	// (n(n+1))/2
+	moves := int(math.Abs(float64(c.start - target)))
+	return (moves * (moves + 1)) / 2
 }
 
 type sim struct {
