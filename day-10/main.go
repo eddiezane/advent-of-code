@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -71,6 +72,9 @@ func main() {
 	lineCounter := 0
 	score := 0
 
+	completionScores := make([]int, 0)
+
+loop:
 	for sc.Scan() {
 		lineCounter++
 
@@ -89,12 +93,41 @@ func main() {
 					log.Printf("line %d corrupted. expected %s found %s", lineCounter, c, char)
 					log.Println(line)
 					score = score + points
-					break
+					goto loop
 				}
 			} else {
 				log.Fatal("invalid char: ", char)
 			}
 		}
+
+		if openStack.empty() {
+			continue
+		}
+
+		log.Printf("line %d stack %v", lineCounter, openStack.data)
+		autoScore := 0
+		for !openStack.empty() {
+			o := openStack.pop()
+			c := matchChars[o]
+
+			switch c {
+			case ")":
+				autoScore = autoScore*5 + 1
+			case "]":
+				autoScore = autoScore*5 + 2
+			case "}":
+				autoScore = autoScore*5 + 3
+			case ">":
+				autoScore = autoScore*5 + 4
+			}
+		}
+		completionScores = append(completionScores, autoScore)
+		log.Println("auto score:", autoScore)
 	}
+
+	sort.Ints(completionScores)
+
 	log.Println("score: ", score)
+
+	log.Println("middle completion score", completionScores[len(completionScores)/2])
 }
