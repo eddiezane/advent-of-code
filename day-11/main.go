@@ -155,12 +155,19 @@ func main() {
 	input := util.Slurp()
 	g := newGrid(input)
 
-	steps := 100
 	flashes := 0
-	for i := 0; i < steps; i++ {
-		flashes = flashes + g.step()
+	allFlash := 0
+	for i := 0; allFlash == 0; i++ {
+		f := g.step()
+
+		if allFlash == 0 && f == 100 {
+			allFlash = i + 1
+		}
+
+		flashes = flashes + f
 	}
 
 	fmt.Println(g)
 	fmt.Println(flashes)
+	fmt.Println(allFlash)
 }
