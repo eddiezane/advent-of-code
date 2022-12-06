@@ -1,6 +1,7 @@
 use std::{
+    collections::HashMap,
     fs::File,
-    io::{BufRead, BufReader}, collections::HashMap,
+    io::{BufRead, BufReader},
 };
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -29,15 +30,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // part 1
     // let score_map = HashMap::from([
-        // ("A X", 4),
-        // ("A Y", 8),
-        // ("A Z", 3),
-        // ("B X", 1),
-        // ("B Y", 5),
-        // ("B Z", 9),
-        // ("C X", 7),
-        // ("C Y", 2),
-        // ("C Z", 6),
+    // ("A X", 4),
+    // ("A Y", 8),
+    // ("A Z", 3),
+    // ("B X", 1),
+    // ("B Y", 5),
+    // ("B Z", 9),
+    // ("C X", 7),
+    // ("C Y", 2),
+    // ("C Z", 6),
     // ]);
 
     let score_map = HashMap::from([
