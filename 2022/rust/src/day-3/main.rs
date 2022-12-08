@@ -8,9 +8,11 @@ fn main() {
     let file = File::open("../inputs/day-3/input.txt").unwrap();
     let reader = BufReader::new(file);
 
-    let lower: HashMap<char, usize> = ('a'..='z').enumerate().map(|(i, c)| (c, i + 1)).collect();
-    let upper: HashMap<char, usize> = ('A'..='Z').enumerate().map(|(i, c)| (c, i + 27)).collect();
-    let scores: HashMap<char, usize> = lower.into_iter().chain(upper).collect();
+    let scores: HashMap<char, usize> = ('a'..='z')
+        .chain('A'..='Z')
+        .enumerate()
+        .map(|(i, c)| (c, i + 1))
+        .collect();
 
     let mut total = 0;
     let lines: Vec<Result<String, std::io::Error>> = reader.lines().collect();
