@@ -53,7 +53,7 @@ fn main() {
         println!("move {amount} from {} to {}", from + 1, to + 1);
         dbg!(&stacks[from]);
 
-        let xfer = stacks[from].drain(0..amount).collect::<Vec<char>>();
+        let xfer = stacks[from].drain(0..amount).rev().collect::<Vec<char>>();
 
         dbg!(&xfer);
 
