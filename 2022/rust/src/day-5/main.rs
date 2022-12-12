@@ -20,7 +20,7 @@ fn main() {
                 let s: Vec<char> = Vec::new();
                 stacks.push(s);
             }
-            let letter = c.iter().nth(1).unwrap();
+            let letter = c.get(1).unwrap();
             let stack = stacks.get_mut(idx).unwrap();
             if *letter != ' ' {
                 stack.push(*letter);
@@ -42,7 +42,7 @@ fn main() {
 
     // read instrctions
     for line in lines {
-        let inst: Vec<&str> = line.split(" ").collect();
+        let inst: Vec<&str> = line.split(' ').collect();
         let amount = inst.get(1).unwrap().parse::<usize>().unwrap();
         let from = inst.get(3).unwrap().parse::<usize>().unwrap() - 1;
         let to = inst.get(5).unwrap().parse::<usize>().unwrap() - 1;
