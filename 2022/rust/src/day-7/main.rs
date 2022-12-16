@@ -146,6 +146,18 @@ fn main() {
         .filter(|(_dir, size)| **size <= 100000)
         .fold(0, |acc, (_dir, size)| acc + size);
     println!("{}", part1);
+
+    let total_size = root.borrow().calc_size();
+    let disk_size: usize = 70000000;
+    let update_size: usize = 30000000;
+    let free: usize = disk_size - total_size;
+    let need_size: usize = update_size - free;
+    let mut part2 = sizes
+        .values()
+        .filter(|&x| *x >= need_size)
+        .collect::<Vec<&usize>>();
+    part2.sort();
+    println!("{}", part2[0]);
 }
 
 fn parse_tree(input: &str) -> Rc<RefCell<Node>> {
