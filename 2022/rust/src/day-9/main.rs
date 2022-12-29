@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, fmt::Display};
 
 #[derive(Debug)]
 struct Move {
@@ -14,17 +14,17 @@ enum Direction {
     Right,
 }
 
+type Knot = (i32, i32);
+
 struct Rope {
-    head: (i32, i32),
-    tail: (i32, i32),
-    tail_visits: HashSet<(i32, i32)>,
+    knots: Vec<Knot>,
+    tail_visits: HashSet<Knot>,
 }
 
 impl Rope {
     fn new() -> Rope {
         let mut rope = Rope {
-            head: (0, 0),
-            tail: (0, 0),
+            knots: vec![(0, 0); 10],
             tail_visits: HashSet::new(),
         };
 
@@ -41,24 +41,44 @@ impl Rope {
             Direction::Right => (1, 0),
         };
 
-        let old_x = self.head.0;
-        let old_y = self.head.1;
+        self.knots[0].0 += delta.0;
+        self.knots[0].1 += delta.1;
 
-        self.head.0 += delta.0;
-        self.head.1 += delta.1;
+        for head in 0..self.knots.len() - 1 {
+            let tail = head + 1;
 
-        if self.need_move_tail() {
-            self.tail.0 = old_x;
-            self.tail.1 = old_y;
-            self.tail_visits.insert((self.tail.0, self.tail.1));
+            if need_move_tail(&self.knots[head], &self.knots[tail]) {
+                let mut x = self.knots[head].0 - self.knots[tail].0;
+                let mut y = self.knots[head].1 - self.knots[tail].1;
+
+                if x != 0 {
+                    x /= x.abs();
+                }
+
+                if y != 0 {
+                    y /= y.abs();
+                }
+
+                self.knots[tail].0 += x;
+                self.knots[tail].1 += y;
+
+                if head == 8 {
+                    self.tail_visits.insert(self.knots[tail]);
+                }
+            }
         }
     }
+}
 
-    fn need_move_tail(&self) -> bool {
-        let dx = self.head.0.abs_diff(self.tail.0);
-        let dy = self.head.1.abs_diff(self.tail.1);
-        dx > 1 || dy > 1
+impl Display for Rope {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self.knots)
     }
+}
+
+fn need_move_tail(head: &Knot, tail: &Knot) -> bool {
+    let dist = (((head.0 - tail.0) as f64).powf(2.0) + ((head.1 - tail.1) as f64).powf(2.0)).sqrt();
+    dist > 2f64.sqrt()
 }
 
 fn main() {
