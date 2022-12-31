@@ -38,27 +38,43 @@ fn main() {
     for inst in program {
         cycle += 1;
         if check_cycle(cycle) {
-            println!("cycle: {} register: {}", cycle, register);
             interesting.insert(cycle, cycle * register);
         }
+        draw(cycle, register);
+
         match inst.op {
             Op::Noop => {}
             Op::Addx => {
                 cycle += 1;
                 if check_cycle(cycle) {
-                    println!("cycle: {} register: {}", cycle, register);
                     interesting.insert(cycle, cycle * register);
                 }
+                draw(cycle, register);
+
                 register += inst.value.unwrap();
             }
         };
     }
 
     let sum: i32 = interesting.values().sum();
-    println!("{:?}", interesting);
-    println!("{sum}");
+    println!("\n\n{sum}");
 }
 
 fn check_cycle(cycle: i32) -> bool {
     cycle == 20 || cycle % 40 == 20
+}
+
+fn draw(cycle: i32, register: i32) {
+    if (cycle - 1) % 40 == 0 {
+        println!();
+    }
+    let head = register - 1;
+    let tail = register + 1;
+    let pos = (cycle % 40) - 1;
+
+    if pos == register || pos == head || pos == tail {
+        print!("#");
+    } else {
+        print!(".");
+    }
 }
