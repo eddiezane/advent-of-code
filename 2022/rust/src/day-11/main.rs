@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 #[derive(Debug)]
 struct Item {
-    worry_level: i32,
+    worry_level: i64,
 }
 
 impl Display for Item {
@@ -16,7 +16,8 @@ struct Monkey {
     items: Vec<Item>,
     operation: Operation,
     test: Operation,
-    inspections: i32,
+    test_val: i64,
+    inspections: i64,
 }
 
 impl Display for Monkey {
@@ -25,7 +26,7 @@ impl Display for Monkey {
     }
 }
 
-type Operation = Box<dyn Fn(i32) -> i32>;
+type Operation = Box<dyn Fn(i64) -> i64>;
 
 fn main() {
     let input = include_str!("../../../inputs/day-11/input.txt");
@@ -39,7 +40,7 @@ fn main() {
             let items: Vec<Item> = s[1]
                 .split(", ")
                 .map(|i| Item {
-                    worry_level: i.parse::<i32>().unwrap(),
+                    worry_level: i.parse::<i64>().unwrap(),
                 })
                 .collect();
 
@@ -47,24 +48,24 @@ fn main() {
             let oo = o.split("new = old ").last().unwrap();
             let ooo: Vec<&str> = oo.split(' ').collect();
             let operation: Operation = match ooo[..] {
-                ["*", "old"] => Box::new(|i: i32| -> i32 { i * i }),
-                ["*", n] => Box::new(|i: i32| -> i32 { i * n.parse::<i32>().unwrap() }),
-                ["+", n] => Box::new(|i: i32| -> i32 { i + n.parse::<i32>().unwrap() }),
+                ["*", "old"] => Box::new(|i: i64| -> i64 { i * i }),
+                ["*", n] => Box::new(|i: i64| -> i64 { i * n.parse::<i64>().unwrap() }),
+                ["+", n] => Box::new(|i: i64| -> i64 { i + n.parse::<i64>().unwrap() }),
                 _ => panic!("unexpected: {ooo:?}"),
             };
 
-            let div = line[3].split("by ").last().unwrap().parse::<i32>().unwrap();
+            let div = line[3].split("by ").last().unwrap().parse::<i64>().unwrap();
             let ift = line[4]
                 .split("monkey ")
                 .last()
-                .map(|i| i.parse::<i32>().unwrap())
+                .map(|i| i.parse::<i64>().unwrap())
                 .unwrap();
             let iff = line[5]
                 .split("monkey ")
                 .last()
-                .map(|i| i.parse::<i32>().unwrap())
+                .map(|i| i.parse::<i64>().unwrap())
                 .unwrap();
-            let test: Operation = Box::new(move |i: i32| -> i32 {
+            let test: Operation = Box::new(move |i: i64| -> i64 {
                 if i % div == 0 {
                     ift
                 } else {
@@ -77,13 +78,15 @@ fn main() {
                 items,
                 operation,
                 test,
+                test_val: div,
                 inspections: 0,
             }
         })
         .collect();
 
-    for round in 0..20 {
-        println!("round: {}", round + 1);
+    let lcd: i64 = monkeys.iter().map(|m| m.test_val).product();
+
+    for _ in 0..10_000 {
         for m in 0..monkeys.len() {
             let monkey = &mut monkeys[m];
             let mut inspections = 0;
@@ -96,7 +99,7 @@ fn main() {
                     i
                 })
                 .map(|mut i| {
-                    i.worry_level /= 3;
+                    i.worry_level %= lcd;
                     i
                 })
                 .map(|i| {
@@ -110,15 +113,13 @@ fn main() {
                 monkeys[target].items.push(item);
             }
         }
-        println!();
     }
 
-    let mut inspection_counts: Vec<i32> = monkeys.iter().map(|m| m.inspections).collect();
+    let mut inspection_counts: Vec<i64> = monkeys.iter().map(|m| m.inspections).collect();
     inspection_counts.sort();
     inspection_counts.reverse();
 
     println!("{inspection_counts:?}");
 
-    // 23712 too low
     println!("{}", inspection_counts[0] * inspection_counts[1]);
 }
