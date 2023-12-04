@@ -7,20 +7,13 @@ struct Game {
 
 fn main() {
     let input = include_str!("../../../inputs/day-2/input.txt");
-    let max = Game {
-        r: 12,
-        g: 13,
-        b: 14,
-    };
 
     let mut answer = 0;
 
     for (idx, line) in input.lines().enumerate() {
         let game = parse_game(line);
-        if game.r > max.r || game.g > max.g || game.b > max.b {
-            continue;
-        }
-        answer += idx + 1;
+        let power = game.r * game.g * game.b;
+        answer += power;
     }
 
     println!("{answer}");
