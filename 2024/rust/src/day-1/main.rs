@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 fn main() {
     let input = include_str!("../../../inputs/day-1/input.txt");
 
@@ -15,11 +17,15 @@ fn main() {
     left_list.sort();
     right_list.sort();
 
-    let sum: i32 = left_list
+    let freq = right_list.iter().fold(HashMap::new(), |mut map, val| {
+        map.entry(val).and_modify(|frq| *frq += 1).or_insert(1);
+        map
+    });
+
+    let score: i32 = left_list
         .iter()
-        .zip(right_list.iter())
-        .map(|(left, right)| (left - right).abs())
+        .map(|i| i * freq.get(i).unwrap_or(&0))
         .sum();
 
-    println!("{}", sum);
+    println!("{}", score);
 }
