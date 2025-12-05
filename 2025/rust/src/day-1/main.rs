@@ -13,10 +13,17 @@ fn main() {
             delta = -delta;
         }
 
-        pos = (pos + delta).rem_euclid(100);
-        if pos == 0 {
-            count += 1;
+        let new_pos = pos + delta;
+
+        let mut wraps = (new_pos / 100).abs();
+
+        if pos != 0 && new_pos <= 0 {
+            wraps += 1;
         }
+
+        pos = new_pos.rem_euclid(100);
+
+        count += wraps;
     }
 
     println!("{count}");
