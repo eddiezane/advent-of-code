@@ -1,23 +1,8 @@
-use std::fmt;
-
-type Grid<'a> = Vec<Vec<&'a str>>;
-
-#[allow(dead_code)]
-struct DisplayGrid<'a>(&'a Grid<'a>);
-
-impl<'a> fmt::Display for DisplayGrid<'a> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        for row in self.0 {
-            let s: String = row.join(" ");
-            writeln!(f, "{}", s)?;
-        }
-        Ok(())
-    }
-}
+use advent_of_code::util::grid::{Grid, transpose};
 
 fn main() {
     let input = include_str!("../../../inputs/day-6/input.txt");
-    let grid: Grid = input
+    let grid: Grid<&str> = input
         .lines()
         .map(|l| l.split_whitespace().collect::<Vec<&str>>())
         .collect();
@@ -40,12 +25,4 @@ fn main() {
     });
 
     println!("{answer}");
-}
-
-fn transpose<'a>(grid: &'a Grid) -> Grid<'a> {
-    let width = grid[0].len();
-
-    (0..width)
-        .map(|col_idx| grid.iter().map(|row| row[col_idx]).collect())
-        .collect()
 }
