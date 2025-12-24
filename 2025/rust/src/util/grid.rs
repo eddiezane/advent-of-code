@@ -32,3 +32,15 @@ where
         .map(|col_idx| grid.iter().map(|row| row[col_idx]).collect())
         .collect()
 }
+
+pub fn left_transpose<T>(grid: &Grid<T>) -> Grid<T>
+where
+    T: Copy,
+{
+    let width = grid[0].len();
+
+    (0..width)
+        .rev()
+        .map(|col_idx| grid.iter().map(|row| row[col_idx]).collect())
+        .collect()
+}
